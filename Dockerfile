@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-MAINTAINER Greg Steinbrecher <steinbrecher@alum.mit.edu>
+LABEL maintainer="Greg Steinbrecher <steinbrecher@alum.mit.edu>"
 
 ENV ARCH amd64
 #ENV ARCH armhf
@@ -11,7 +11,7 @@ ENV LANG C.UTF-8
 ENV INFLUXDB_VERSION 1.8.2
 ENV GRAFANA_VERSION  7.1.5
 
-ENV GRAFANA_PORT 443
+ENV GRAFANA_PORT 2096
 ENV INFLUXDB_PORT 8443
 
 # Default name of influxdb database
