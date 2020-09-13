@@ -16,6 +16,23 @@ ENV CHRONOGRAF_VERSION 1.8.0
 # Default name of influxdb database
 ENV INFLUXDB_DATABASE_NAME home_data
 
+# HTTPS Certificate Naming
+ARG INP_HTTPS_CERT
+ARG INP_HTTPS_CERT_KEY
+ARG HTTPS_CERT_NAME
+ARG HTTPS_CERT_KEY_NAME
+ENV HTTPS_CERT /etc/ssl/certs/${HTTPS_CERT_NAME}
+ENV HTTPS_CERT_KEY /etc/ssl/private/${HTTPS_CERT_KEY_NAME}
+ENV GRAFANA_CERT ${HTTPS_CERT}
+ENV GRAFANA_CERT_KEY ${HTTPS_CERT_KEY}
+ENV INFLUXDB_HTTP_HTTPS_CERTIFICATE ${HTTPS_CERT}
+ENV INFLUXDB_HTTP_HTTPS_PRIVATE_KEY ${HTTPS_CERT_KEY}
+
+# Comment these if using self-signed
+COPY ${INP_HTTPS_CERT} ${HTTPS_CERT}
+COPY ${INP_HTTPS_CERT_KEY} ${HTTPS_CERT_KEY}
+
+# Username / Password config to get at runtime
 ARG INFLUXDB_ADMIN_USER
 ARG INFLUXDB_ADMIN_PASSWORD
 ENV INFLUXDB_ADMIN_USER=${INFLUXDB_ADMIN_USER}
@@ -60,6 +77,7 @@ RUN apt-get -y update && \
   net-tools \
   openssl \
   supervisor \
+  ssl-cert \
   wget \
   adduser \
   ntp \
@@ -76,6 +94,11 @@ RUN mkdir -p /var/log/supervisor && rm -rf .profile
 
 COPY bash/profile .profile
 
+# Make SSL Certificates
+COPY scripts/setup_certs.sh /tmp/setup_certs.sh
+
+RUN /tmp/setup_certs.sh
+
 # Configure MySql
 COPY scripts/setup_mysql.sh /tmp/setup_mysql.sh
 
@@ -89,6 +112,9 @@ RUN /tmp/start_ntp.sh
 # Install InfluxDB
 RUN wget https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_${ARCH}.deb && \
 	dpkg -i influxdb_${INFLUXDB_VERSION}_${ARCH}.deb && rm influxdb_${INFLUXDB_VERSION}_${ARCH}.deb
+
+# Make sure influxdb user can read ssl cert keys
+RUN usermod -a -G ssl-cert influxdb
 
 # Configure InfluxDB
 COPY influxdb/influxdb.conf /etc/influxdb/influxdb.conf
@@ -107,22 +133,23 @@ RUN /tmp/setup_influx.sh
 # COPY telegraf/init.sh /etc/init.d/telegraf
 
 # Install chronograf
-RUN wget https://dl.influxdata.com/chronograf/releases/chronograf_${CHRONOGRAF_VERSION}_${ARCH}.deb && \
-  dpkg -i chronograf_${CHRONOGRAF_VERSION}_${ARCH}.deb
+# RUN wget https://dl.influxdata.com/chronograf/releases/chronograf_${CHRONOGRAF_VERSION}_${ARCH}.deb && \
+#   dpkg -i chronograf_${CHRONOGRAF_VERSION}_${ARCH}.deb
 
 # Install Grafana
 
 RUN wget https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_amd64.deb && \
 	dpkg -i grafana_${GRAFANA_VERSION}_amd64.deb && rm grafana_${GRAFANA_VERSION}_amd64.deb
 
+# Make sure grafana user can read ssl certs
+RUN usermod -a -G ssl-cert grafana
+
 # Configure Grafana with provisioning
 ADD grafana/provisioning /etc/grafana/provisioning
 ADD grafana/dashboards /var/lib/grafana/dashboards
 COPY grafana/grafana.ini /etc/grafana/grafana.ini
 
-COPY scripts/make_certs.sh /tmp/make_certs.sh
 
-RUN /tmp/make_certs.sh
 
 # Cleanup
 RUN apt-get clean && \
