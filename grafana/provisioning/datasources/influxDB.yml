@@ -2,9 +2,8 @@ datasources:
   - name: InfluxDB
     type: influxdb
     access: proxy
-    database: telegraf
-    user: telegraf
-    password: telegraf
+    database: $INFLUXDB_DATABASE_NAME
     url: http://localhost:8086
     isDefault: true
-
+    user: $INFLUXDB_USER
+    password: $INFLUXDB_PASSWORD
