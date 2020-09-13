@@ -8,13 +8,15 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV LANG C.UTF-8
 
 # Default versions
-# ENV TELEGRAF_VERSION 1.13.3-1
 ENV INFLUXDB_VERSION 1.8.2
 ENV GRAFANA_VERSION  7.1.5
-ENV CHRONOGRAF_VERSION 1.8.0
 
 # Default name of influxdb database
 ENV INFLUXDB_DATABASE_NAME home_data
+
+# Hostname Config
+ARG SERVER_URL
+ENV SERVER_URL ${SERVER_URL}
 
 # HTTPS Certificate Naming
 ARG INP_HTTPS_CERT
@@ -124,18 +126,6 @@ COPY scripts/setup_influx.sh /tmp/setup_influx.sh
 
 RUN /tmp/setup_influx.sh
 
-# # Install Telegraf
-# RUN wget https://dl.influxdata.com/telegraf/releases/telegraf_${TELEGRAF_VERSION}_${ARCH}.deb && \
-# 	dpkg -i telegraf_${TELEGRAF_VERSION}_${ARCH}.deb && rm telegraf_${TELEGRAF_VERSION}_${ARCH}.deb
-
-# # Configure Telegraf
-# COPY telegraf/telegraf.conf /etc/telegraf/telegraf.conf
-# COPY telegraf/init.sh /etc/init.d/telegraf
-
-# Install chronograf
-# RUN wget https://dl.influxdata.com/chronograf/releases/chronograf_${CHRONOGRAF_VERSION}_${ARCH}.deb && \
-#   dpkg -i chronograf_${CHRONOGRAF_VERSION}_${ARCH}.deb
-
 # Install Grafana
 
 RUN wget https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_amd64.deb && \
@@ -148,8 +138,6 @@ RUN usermod -a -G ssl-cert grafana
 ADD grafana/provisioning /etc/grafana/provisioning
 ADD grafana/dashboards /var/lib/grafana/dashboards
 COPY grafana/grafana.ini /etc/grafana/grafana.ini
-
-
 
 # Cleanup
 RUN apt-get clean && \
