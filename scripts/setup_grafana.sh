@@ -9,3 +9,5 @@ echo "export GRAFANA_ADMIN_USER=${GRAFANA_ADMIN_USER}" >> /etc/default/grafana-s
 echo "export GRAFANA_ADMIN_PW=${GRAFANA_ADMIN_PW}" >> /etc/default/grafana-server
 echo "export GRAFANA_PORT=${GRAFANA_PORT}" >> /etc/default/grafana-server
 echo "export INFLUXDB_PORT=${INFLUXDB_PORT}" >> /etc/default/grafana-server
+
+setcap CAP_NET_BIND_SERVICE=+eip $(which grafana-server)

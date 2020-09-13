@@ -82,6 +82,7 @@ RUN apt-get -y update && \
   libfontconfig \
   libaio1 \
   libaio-dev \
+  libcap2-bin \
   mysql-client \
   mysql-server \
   nano \
