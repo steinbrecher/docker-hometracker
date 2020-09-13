@@ -5,7 +5,7 @@ datasources:
     type: influxdb
     access: proxy
     database: ${INFLUXDB_DATABASE_NAME}
-    url: https://${SERVER_URL}:8086
+    url: https://${SERVER_URL}:${INFLUXDB_PORT}
     isDefault: true
     user: ${INFLUXDB_USER}
     password: ${INFLUXDB_PASSWORD}

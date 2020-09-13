@@ -5,6 +5,7 @@ set -euo pipefail
 # Set up environment variables for influx
 echo "export INFLUXDB_HTTP_HTTPS_CERTIFICATE=${HTTPS_CERT}" >> /etc/default/influxdb
 echo "export INFLUXDB_HTTP_HTTPS_PRIVATE_KEY=${HTTPS_CERT_KEY}" >> /etc/default/influxdb
+echo "export INFLUXDB_HTTP_BIND_ADDRESS=:${INFLUXDB_PORT}" >> /etc/default/influxdb
 
 echo "Starting InfluxDB..."
 service influxdb start

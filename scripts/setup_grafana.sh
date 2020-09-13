@@ -7,3 +7,5 @@ echo "export INFLUXDB_PASSWORD=${INFLUXDB_PASSWORD}" >> /etc/default/grafana-ser
 echo "export SERVER_URL=${SERVER_URL}" >> /etc/default/grafana-server
 echo "export GRAFANA_ADMIN_USER=${GRAFANA_ADMIN_USER}" >> /etc/default/grafana-server
 echo "export GRAFANA_ADMIN_PW=${GRAFANA_ADMIN_PW}" >> /etc/default/grafana-server
+echo "export GRAFANA_PORT=${GRAFANA_PORT}" >> /etc/default/grafana-server
+echo "export INFLUXDB_PORT=${INFLUXDB_PORT}" >> /etc/default/grafana-server

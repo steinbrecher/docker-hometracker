@@ -11,6 +11,9 @@ ENV LANG C.UTF-8
 ENV INFLUXDB_VERSION 1.8.2
 ENV GRAFANA_VERSION  7.1.5
 
+ENV GRAFANA_PORT 443
+ENV INFLUXDB_PORT 8443
+
 # Default name of influxdb database
 ENV INFLUXDB_DATABASE_NAME home_data
 
@@ -77,6 +80,8 @@ RUN apt-get -y update && \
   htop \
   gnupg \
   libfontconfig \
+  libaio1 \
+  libaio-dev \
   mysql-client \
   mysql-server \
   nano \
